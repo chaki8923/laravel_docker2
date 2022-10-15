@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+
+  db:
+    image: mariadb:10.4
+    container_name: "laravel-db"
+    volumes:
+      - ./data:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: chaki
+      MYSQL_PASSWORD: chaki8923
+      TZ: 'Asia/Tokyo'
+    ports:
+      - "3306:3306"
+  php:
+    build: ./php
+    container_name: "laravel-php"
+    volumes:
+      - ./src:/var/www/html
+      - ./php/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
+      # - ./php/vhost.conf:/etc/apache2/conf-enabled/vhost.conf こっちのパターンでもOK
+    depends_on:
+      - db
+    ports:
+      - "8082:80"
+
+    # docker-compose run php composer create-project --prefer-dist laravel/laravel .
+    #これでコンテナ立ち上げて同時にLaravelプロジェクト作成
+
